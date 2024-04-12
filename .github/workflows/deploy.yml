@@ -1,0 +1,31 @@
+name: Deploy GuestbookApp	#워크 플로우 이름
+
+on:					#이벤트 정의
+  push:
+    branches:
+      - master		#master라는 이름으로 깃허브에 push가 되면 적용
+      
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest	#러너
+    steps:
+      - name: Checkout code		#내가 정한 이름
+        uses: actions/checkout@v3	#실제 실행되는 액션
+        
+      - name: Set up JDK 17
+        uses: actions/setup-java@v2
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          
+      - name: Build with Maven
+        run: mvn clean package
+        
+      - name: Build Docker image
+        run: docker build . -t kodasom/guestbook:latest
+        
+      - name: Log in to Docker Hub
+        run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+        
+      - name: Push Docker image to Docker Hub
+        run: docker push kodasom/guestbook:latest
