@@ -1,9 +1,10 @@
 name: Deploy GuestbookApp	#워크 플로우 이름
-
+  
 on:					#이벤트 정의
-  push:
-    branches:
-      - master		#master라는 이름으로 깃허브에 push가 되면 적용
+  workflow_dispatch:
+#  push:
+#    branches:
+#      - master #master라는 이름으로 깃허브에 push가 되면 적용
       
 jobs:
   build-and-deploy:
@@ -22,7 +23,8 @@ jobs:
         run: mvn clean package
         
       - name: Build Docker image
-        run: docker build . -t kodasom/guestbook:latest
+        run: docker build -t kodasom/guestbook:latest .
+        #run: docker build . -t kodasom/guestbook:latest
         
       - name: Log in to Docker Hub
         run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
